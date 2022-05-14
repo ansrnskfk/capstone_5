@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<link href = "mainStyle.css" rel="stylesheet">
+<script type="text/javascript" src="app.js"></script>
+<script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=w5d2k9jxta&submodules=geocoder"></script>
+
+<head>
+  <title>AI Navi</title>
+</head>
+<body>
+    <div class = "display"> <!--상단부-->
+        <div class = "menuSec"> <!--메뉴 바-->
+            <button id="main" onclick="category0()"><img src="img/main.png" height="40" width ="40"></button>
+            <p id="searchF">검색</p>
+            <span id="searchB">
+                <input type = "targetLocation">
+            </span>
+        </div>
+        
+        <div id= "menu"> <!--접었다 펴는 메뉴-->
+            <li><button id="mbutton" onclick = "location.href ='search.html'">길찾기</li>
+            <li><button id="mbutton">가장 가까운 안심장소</button></li>
+            <li><button id="mbutton">가까운 성범죄자 위치</button></li>
+            <li><button id="mbutton" onclick ="location.href = 'setting.html'">설정</button></li>
+        </div>
+    </div>
+
+    <div class = "zoomSec"> <!--확대 축소 부분-->
+        <button id="zoom" onclick = "zoomInAndOut('in')">+</button><br>
+        <button id="zoom" onclick = "zoomInAndOut('in')">-</button>
+    </div>
+    
+</body>
+
+</html>

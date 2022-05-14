@@ -1,0 +1,58 @@
+.searchBar{
+    width:400px;
+    height:90px;
+}
+
+#change{
+    float:left;
+    padding:0px;
+    margin-right:10px;
+    margin-left:20px;
+    height:90px;
+    width:50px;
+    border:none;
+    background-color:none;
+
+}
+
+
+
+.SBox1{
+    float:left;
+    margin:2px;
+    margin-right:5px;
+    height:30px;
+    width:250px;
+    border: solid black;
+    border-radius:5px;
+}
+
+#sBox{
+    border:none;
+    width:210px;
+    height:28px;
+}
+
+#delete{
+    width:24px;
+    height:24px;
+    margin:2px;
+    border-radius:13px;
+    background-color: black;
+    border: 1px gray;
+    color:white;
+}
+
+#search{
+    margin:auto;
+    padding:0px;
+    width: 40px;
+    height:30px;
+    display:inline-block;
+}
+
+
+.deleteB{
+    width:30px;
+    height:30px
+}
