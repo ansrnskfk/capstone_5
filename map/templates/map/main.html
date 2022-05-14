@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+{% load static %}
+<link href = " {% static 'mainStyle.css' %}" rel="stylesheet">
+<link href = " {% static 'searchStyle.css' %}" rel="stylesheet">
+<link href = " {% static 'style.css' %}" rel="stylesheet">
+<script type="text/javascript" src="app.js"></script>
+
+<head>
+  <title>AI Navi</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=q6jrpz6n66"></script>
+</head>
+<body>
+    <div class = "display"> <!--상단부-->
+        <div class = "menuSec"> <!--메뉴 바-->
+            <button id="main" onclick="category0()"><img src="{% static 'img/main.png'%}" height="40" width ="40"></button>
+            <p id="searchF">검색</p>
+            <span id="searchB">
+                <input type = "targetLocation">
+            </span>
+        </div>
+        
+        <div id= "menu"> <!--접었다 펴는 메뉴-->
+            <li><button id="mbutton" onclick = "location.href ='/map/search'">길찾기</li>
+            <li><button id="mbutton">가장 가까운 안심장소</button></li>
+            <li><button id="mbutton">가까운 성범죄자 위치</button></li>
+            <li><button id="mbutton" onclick ="location.href = '/map/setting'">설정</button></li>
+        </div>
+    </div>
+
+<!--    <div class = "zoomSec"> &lt;!&ndash;확대 축소 부분&ndash;&gt;-->
+<!--        <button id="zoom" onclick = "zoomInAndOut('in')">+</button><br>-->
+<!--        <button id="zoom" onclick = "zoomInAndOut('in')">-</button>-->
+<!--    </div>-->
+
+    <!--네이버 지도-->
+    <div id="map" style="width:100%;height:950px;"></div>
+
+    <script>
+        function category0() {
+    if(document.getElementById('menu').style.display ==='none') {
+      document.getElementById('menu').style.display = 'block';
+    } else {
+      document.getElementById('menu').style.display = 'none';
+    }
+  }
+
+
+
+  //네이버 지도 검색 api
+    var latitude = {{latitude.1}}
+    var longitude = {{longitude.1}};
+
+  var map = new naver.maps.Map("map", {
+    center: new naver.maps.LatLng(latitude, longitude),
+    zoom: 15,
+    mapTypeControl: true,
+    zoomControl: true,
+  });
+
+  var marker = new naver.maps.Marker({
+    position: new naver.maps.LatLng(latitude, longitude),
+    map: map
+  });
+
+
+  var infoWindow = new naver.maps.InfoWindow({
+    anchorSkew: true
+  });
+
+  map.setCursor('pointer');
+
+  function searchCoordinateToAddress(latlng) {
+
+    infoWindow.close();
+
+    naver.maps.Service.reverseGeocode({
+      coords: latlng,
+      orders: [
+        naver.maps.Service.OrderType.ADDR,
+        naver.maps.Service.OrderType.ROAD_ADDR
+      ].join(',')
+    }, function(status, response) {
+      if (status === naver.maps.Service.Status.ERROR) {
+        if (!latlng) {
+          return alert('ReverseGeocode Error, Please check latlng');
+        }
+        if (latlng.toString) {
+          return alert('ReverseGeocode Error, latlng:' + latlng.toString());
+        }
+        if (latlng.x && latlng.y) {
+          return alert('ReverseGeocode Error, x:' + latlng.x + ', y:' + latlng.y);
+        }
+        return alert('ReverseGeocode Error, Please check latlng');
+      }
+
+      var address = response.v2.address,
+          htmlAddresses = [];
+
+      if (address.jibunAddress !== '') {
+          htmlAddresses.push('[지번 주소] ' + address.jibunAddress);
+      }
+
+      if (address.roadAddress !== '') {
+          htmlAddresses.push('[도로명 주소] ' + address.roadAddress);
+      }
+
+      infoWindow.setContent([
+        '<div style="padding:10px;min-width:200px;line-height:150%;">',
+        '<h4 style="margin-top:5px;">검색 좌표</h4><br />',
+        htmlAddresses.join('<br />'),
+        '</div>'
+      ].join('\n'));
+
+      infoWindow.open(map, latlng);
+    });
+  }
+
+  function searchAddressToCoordinate(address) {
+    naver.maps.Service.geocode({
+      query: address
+    }, function(status, response) {
+      if (status === naver.maps.Service.Status.ERROR) {
+        if (!address) {
+          return alert('Geocode Error, Please check address');
+        }
+        return alert('Geocode Error, address:' + address);
+      }
+
+      if (response.v2.meta.totalCount === 0) {
+        return alert('No result.');
+      }
+
+      var htmlAddresses = [],
+        item = response.v2.addresses[0],
+        point = new naver.maps.Point(item.x, item.y);
+
+      if (item.roadAddress) {
+        htmlAddresses.push('[도로명 주소] ' + item.roadAddress);
+      }
+
+      if (item.jibunAddress) {
+        htmlAddresses.push('[지번 주소] ' + item.jibunAddress);
+      }
+
+      if (item.englishAddress) {
+        htmlAddresses.push('[영문명 주소] ' + item.englishAddress);
+      }
+
+      infoWindow.setContent([
+        '<div style="padding:10px;min-width:200px;line-height:150%;">',
+        '<h4 style="margin-top:5px;">검색 주소 : '+ address +'</h4><br />',
+        htmlAddresses.join('<br />'),
+        '</div>'
+      ].join('\n'));
+
+      map.setCenter(point);
+      infoWindow.open(map, point);
+    });
+  }
+
+  function initGeocoder() {
+    map.addListener('click', function(e) {
+      searchCoordinateToAddress(e.coord);
+    });
+
+    $('#address').on('keydown', function(e) {
+      var keyCode = e.which;
+
+      if (keyCode === 13) { // Enter Key
+        searchAddressToCoordinate($('#address').val());
+      }
+    });
+
+    $('#submit').on('click', function(e) {
+      e.preventDefault();
+
+      searchAddressToCoordinate($('#address').val());
+    });
+
+    searchAddressToCoordinate('정자동 178-1');
+  }
+
+  naver.maps.onJSContentLoaded = initGeocoder;
+    </script>
+
+<!--    <script> &lt;!&ndash;-->
+<!--    var mapOptions = {-->
+<!--        center: new naver.maps.LatLng( 35.14008589151019, 126.9342576839472),-->
+<!--        zoom: 18-->
+<!--    };-->
+
+<!--    var map = new naver.maps.Map('map', mapOptions);-->
+<!--    var latitude = {{cctvinfo.0.latitude}};-->
+<!--    var longitude = {{cctvinfo.0.longitude}};-->
+<!--    var marker = new naver.maps.Marker({-->
+<!--    position: new naver.maps.LatLng(latitude, longitude),-->
+<!--    map: map-->
+<!--    });-->
+
+<!--    var contentString = [-->
+<!--        '<div class="iw_inner">',-->
+<!--        '   <h3>CCTV</h3>',-->
+<!--        '   <p>test<br />',-->
+<!--        '       test<br />',-->
+<!--        '   </p>',-->
+<!--        '</div>'-->
+<!--    ].join('');-->
+
+<!--    var infowindow = new naver.maps.InfoWindow({-->
+<!--     content: contentString-->
+<!--    });-->
+
+<!--    naver.maps.Event.addListener(marker, "click", function(e) {-->
+<!--        if (infowindow.getMap()) {-->
+<!--            infowindow.close();-->
+<!--     } else {-->
+<!--         infowindow.open(map, marker);-->
+<!--     }-->
+<!--    });-->
+
+<!--    infowindow.open(map, marker);-->
+<!--    </script>-->
+    
+</body>
+
+</html>

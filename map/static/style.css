@@ -1,0 +1,52 @@
+@charset "UTF-8";
+
+.display{
+    width:500px;
+    height:500px;
+}
+.menuSec{
+    width: 300px;
+    height: 80px;
+    text-align: center;
+    align-items:center;
+}
+
+#main{
+    float:left;
+    padding: 0px;
+    margin:10px;
+    display:inline-block;
+    background-color: white;
+    border-radius: 5px;
+    vertical-align: auto;
+    border-color: #b8b8b8;
+}
+
+#searchF{
+    float:left;
+    vertical-align: auto
+}
+
+#searchB{
+    text-align: center;
+}
+
+#menu{
+    width: 200px;
+    height:300px;
+}
+.zoomSec{
+    width: 60px;
+}
+#zoom{
+    margin:5px;
+    background-color: white;
+    height : 30px;
+    width : 30px;
+    border-radius: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    /*color: #b8b8b8;*/
+    vertical-align: auto;
+    border-color: #b8b8b8;
+}

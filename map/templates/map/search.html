@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+{% load static %}
+<link href = " {% static 'mainStyle.css' %}" rel="stylesheet">
+<link href = " {% static 'searchStyle.css' %}" rel="stylesheet">
+<link href = " {% static 'style.css' %}" rel="stylesheet">
+
+    <link href = "searchStyle.css" rel="stylesheet">
+    <head>
+        <title>길찾기</title>
+    </head>
+
+    <body>
+        <div class = "searchBar"> <!--길찾기 바-->
+
+            <button id="change">^</button>
+
+            <div>
+                <div class="SBox"> <!--sbox들은 디자인상 이유로 구분되었습니다-->
+                    <input id="sBox" type = "startLocation"> <!--검색 창입니다-->
+                    <button id = "delete">X</button>    
+                </div>
+                <button id = "search">검색</button>
+            </div>
+            <br>
+            <div>
+                <div class="SBox">
+                    <input id="sBox" type = "targetLocation"> <!--검색 창입니다-->
+                    <button id = "delete">X</button>
+                </div>
+                <button id = "search">검색</button>
+            </div>
+        </div>
+
+        <div class="pastList"> <!--과거 기록-->
+
+        </div>
+    </body>
+</html>

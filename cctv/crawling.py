@@ -38,20 +38,62 @@ def getCctv():
 def getInfo():
     jsonData = getCctv()    # line 24 함수 호출
     jsonResult = []
+    num = 0
 
     for index in range(0, 2612):
         longitude = jsonData['data'][index]['경도']
         latitude = jsonData['data'][index]['위도']
-        adress = jsonData['data'][index]['소재지도로명주소']
+        adress = jsonData['data'][index]['소재지지번주소']
         manager_name = jsonData['data'][index]['관리기관명']
         phonenumber = jsonData['data'][index]['관리기관전화번호']
-        jsonResult.append({'longitude': longitude, 'latitude': latitude, 'adress': adress, 'manager_name': manager_name, 'phonenumber': phonenumber})
+
+        if '동구' in adress:
+            num += 1
+            jsonResult.append(
+                {'num': num, 'longitude': longitude, 'latitude': latitude, 'adress': adress, 'manager_name': manager_name,
+                 'phonenumber': phonenumber})
 
     return jsonResult
 
-def main():
-    cctv_info = getInfo()
-    print(cctv_info)
+def getLng():
+    cctvinfo = getInfo()
+    longitude = []
+    for index in range(0, 336):
+        longitude.append(cctvinfo[index]['longitude'])
+    return longitude
 
-if __name__ == '__main__':
-    main()
+def getLat():
+    cctvinfo = getInfo()
+    latitude = []
+    for index in range(0, 336):
+        latitude.append(cctvinfo[index]['latitude'])
+    return latitude
+
+def getAdress():
+    cctvinfo = getInfo()
+    adress = []
+    for index in range(0, 336):
+        adress.append(cctvinfo[index]['adress'])
+    return adress
+
+def getManager():
+    cctvinfo = getInfo()
+    manager = []
+    for index in range(0, 336):
+        manager.append(cctvinfo[index]['manager_name'])
+    return manager
+
+def getPhonenum():
+    cctvinfo = getInfo()
+    phonenum = []
+    for index in range(0, 336):
+        phonenum.append(cctvinfo[index]['phonenumber'])
+    return phonenum
+
+#
+# def main():
+#     cctv_info = getInfo()
+#     print(cctv_info)
+#
+# if __name__ == '__main__':
+#     main()
