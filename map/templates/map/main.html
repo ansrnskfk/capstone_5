@@ -4,8 +4,8 @@
 {% load static %}
 <link href = " {% static 'mainStyle.css' %}" rel="stylesheet">
 <link href = " {% static 'searchStyle.css' %}" rel="stylesheet">
-<link href = " {% static 'style.css' %}" rel="stylesheet">
-<script type="text/javascript" src="app.js"></script>
+<script type="text/javascript" src="static/app.js'"></script>
+<script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=w5d2k9jxta&submodules=geocoder"></script>
 
 <head>
   <title>AI Navi</title>
@@ -15,192 +15,82 @@
     <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=q6jrpz6n66"></script>
 </head>
 <body>
+  <div class ="front">
     <div class = "display"> <!--상단부-->
         <div class = "menuSec"> <!--메뉴 바-->
             <button id="main" onclick="category0()"><img src="{% static 'img/main.png'%}" height="40" width ="40"></button>
-            <p id="searchF">검색</p>
             <span id="searchB">
-                <input type = "targetLocation">
+                <div class="SBox1">
+                        <input id="sBox" type = "targetLocation"> <!--검색 창입니다-->
+                        <button id = "delete">X</button>
+                    </div>
+                    <button id = "search" type="submit" form="todo-form" placeholder="SEARCH">검색</button>
             </span>
         </div>
-        
+
         <div id= "menu"> <!--접었다 펴는 메뉴-->
-            <li><button id="mbutton" onclick = "location.href ='/map/search'">길찾기</li>
-            <li><button id="mbutton">가장 가까운 안심장소</button></li>
-            <li><button id="mbutton">가까운 성범죄자 위치</button></li>
-            <li><button id="mbutton" onclick ="location.href = '/map/setting'">설정</button></li>
+            <li><button class="mbutton" onclick = "location.href ='/map/search'">길찾기</li>
+            <li><button class="mbutton" id="safeZonebtn" onclick="safeZone()">안심장소 지도 표시</button></li>
+            <li><button class="mbutton">가장 가까운 안심장소</button></li>
+            <li><button class="mbutton">가까운 성범죄자 위치</button></li>
+            <li><button class="mbutton" onclick ="location.href = '/map/setting'">설정</button></li>
         </div>
     </div>
-
-<!--    <div class = "zoomSec"> &lt;!&ndash;확대 축소 부분&ndash;&gt;-->
-<!--        <button id="zoom" onclick = "zoomInAndOut('in')">+</button><br>-->
-<!--        <button id="zoom" onclick = "zoomInAndOut('in')">-</button>-->
-<!--    </div>-->
+  </div>
 
     <!--네이버 지도-->
     <div id="map" style="width:100%;height:950px;"></div>
 
-    <script>
+    <script type="text/javascript">
         function category0() {
-    if(document.getElementById('menu').style.display ==='none') {
-      document.getElementById('menu').style.display = 'block';
-    } else {
-      document.getElementById('menu').style.display = 'none';
-    }
-  }
-
-
-
-  //네이버 지도 검색 api
-    var latitude = {{latitude.1}}
-    var longitude = {{longitude.1}};
-
-  var map = new naver.maps.Map("map", {
-    center: new naver.maps.LatLng(latitude, longitude),
-    zoom: 15,
-    mapTypeControl: true,
-    zoomControl: true,
-  });
-
-  var marker = new naver.maps.Marker({
-    position: new naver.maps.LatLng(latitude, longitude),
-    map: map
-  });
-
-
-  var infoWindow = new naver.maps.InfoWindow({
-    anchorSkew: true
-  });
-
-  map.setCursor('pointer');
-
-  function searchCoordinateToAddress(latlng) {
-
-    infoWindow.close();
-
-    naver.maps.Service.reverseGeocode({
-      coords: latlng,
-      orders: [
-        naver.maps.Service.OrderType.ADDR,
-        naver.maps.Service.OrderType.ROAD_ADDR
-      ].join(',')
-    }, function(status, response) {
-      if (status === naver.maps.Service.Status.ERROR) {
-        if (!latlng) {
-          return alert('ReverseGeocode Error, Please check latlng');
+            if(document.getElementById('menu').style.display ==='none') {
+                document.getElementById('menu').style.display = 'block';
+            } else {
+                document.getElementById('menu').style.display = 'none';
+            }
         }
-        if (latlng.toString) {
-          return alert('ReverseGeocode Error, latlng:' + latlng.toString());
+
+
+        var latitude = {{latitude|safe}};
+        var longitude = {{longitude|safe}};
+
+        var map = new naver.maps.Map("map", {   // 지도 설정
+            center: new naver.maps.LatLng(latitude[1], longitude[1]),
+            zoom: 15,
+            mapTypeControl: true,
+            zoomControl: true,
+            zoomControlOptions: { position: naver.maps.Position.LEFT_CENTER },
+        });
+
+        function safeZone(){
+            if(document.getElementById('safeZonebtn')){
+                for(i=0; i<latitude.length; i++){   // 마커 생성
+                    var marker = new naver.maps.Marker({
+                    position: new naver.maps.LatLng(latitude[i], longitude[i]),
+                    map: map
+                    });
+                }
+            }
+            /*
+            else if{
+            }
+            */
         }
-        if (latlng.x && latlng.y) {
-          return alert('ReverseGeocode Error, x:' + latlng.x + ', y:' + latlng.y);
+
+        var pathCoord = {{pathCoord|safe}};
+        var polylinePath = new Array();
+        for (i=0; i<pathCoord.length; i++){
+            LatLng = new naver.maps.LatLng(pathCoord[i][1], pathCoord[i][0])
+            polylinePath.push(LatLng)
         }
-        return alert('ReverseGeocode Error, Please check latlng');
-      }
-
-      var address = response.v2.address,
-          htmlAddresses = [];
-
-      if (address.jibunAddress !== '') {
-          htmlAddresses.push('[지번 주소] ' + address.jibunAddress);
-      }
-
-      if (address.roadAddress !== '') {
-          htmlAddresses.push('[도로명 주소] ' + address.roadAddress);
-      }
-
-      infoWindow.setContent([
-        '<div style="padding:10px;min-width:200px;line-height:150%;">',
-        '<h4 style="margin-top:5px;">검색 좌표</h4><br />',
-        htmlAddresses.join('<br />'),
-        '</div>'
-      ].join('\n'));
-
-      infoWindow.open(map, latlng);
+        var polyline = new naver.maps.Polyline({
+            path: polylinePath,      //선 위치 변수배열
+            strokeColor: '#FF0000', //선 색 빨강 #빨강,초록,파랑
+            strokeOpacity: 0.8, //선 투명도 0 ~ 1
+            strokeWeight: 6,   //선 두께
+            map: map           //오버레이할 지도
     });
-  }
-
-  function searchAddressToCoordinate(address) {
-    naver.maps.Service.geocode({
-      query: address
-    }, function(status, response) {
-      if (status === naver.maps.Service.Status.ERROR) {
-        if (!address) {
-          return alert('Geocode Error, Please check address');
-        }
-        return alert('Geocode Error, address:' + address);
-      }
-
-      if (response.v2.meta.totalCount === 0) {
-        return alert('No result.');
-      }
-
-      var htmlAddresses = [],
-        item = response.v2.addresses[0],
-        point = new naver.maps.Point(item.x, item.y);
-
-      if (item.roadAddress) {
-        htmlAddresses.push('[도로명 주소] ' + item.roadAddress);
-      }
-
-      if (item.jibunAddress) {
-        htmlAddresses.push('[지번 주소] ' + item.jibunAddress);
-      }
-
-      if (item.englishAddress) {
-        htmlAddresses.push('[영문명 주소] ' + item.englishAddress);
-      }
-
-      infoWindow.setContent([
-        '<div style="padding:10px;min-width:200px;line-height:150%;">',
-        '<h4 style="margin-top:5px;">검색 주소 : '+ address +'</h4><br />',
-        htmlAddresses.join('<br />'),
-        '</div>'
-      ].join('\n'));
-
-      map.setCenter(point);
-      infoWindow.open(map, point);
-    });
-  }
-
-  function initGeocoder() {
-    map.addListener('click', function(e) {
-      searchCoordinateToAddress(e.coord);
-    });
-
-    $('#address').on('keydown', function(e) {
-      var keyCode = e.which;
-
-      if (keyCode === 13) { // Enter Key
-        searchAddressToCoordinate($('#address').val());
-      }
-    });
-
-    $('#submit').on('click', function(e) {
-      e.preventDefault();
-
-      searchAddressToCoordinate($('#address').val());
-    });
-
-    searchAddressToCoordinate('정자동 178-1');
-  }
-
-  naver.maps.onJSContentLoaded = initGeocoder;
     </script>
-
-<!--    <script> &lt;!&ndash;-->
-<!--    var mapOptions = {-->
-<!--        center: new naver.maps.LatLng( 35.14008589151019, 126.9342576839472),-->
-<!--        zoom: 18-->
-<!--    };-->
-
-<!--    var map = new naver.maps.Map('map', mapOptions);-->
-<!--    var latitude = {{cctvinfo.0.latitude}};-->
-<!--    var longitude = {{cctvinfo.0.longitude}};-->
-<!--    var marker = new naver.maps.Marker({-->
-<!--    position: new naver.maps.LatLng(latitude, longitude),-->
-<!--    map: map-->
-<!--    });-->
 
 <!--    var contentString = [-->
 <!--        '<div class="iw_inner">',-->

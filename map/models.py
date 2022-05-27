@@ -1,5 +1,5 @@
 from django.db import models
-from cctv import crawling
+from crawling import crawling_cctv
 
 # Create your models here.
 # class Cctv_longitude(models.Model):

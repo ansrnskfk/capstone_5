@@ -1,10 +1,6 @@
-import os
-import sys
 import urllib.request
 import datetime
-import time
 import json
-import pandas as pd
 
 ServiceKey = "jhPdJwd22r%2BeOuAA5jWR2YuNOAajqH6TXIQOEJjHGX3%2F%2BWJs4XexNQkVkEykw3aiOlvKUKgYY%2FSe49ifSsJvVw%3D%3D"
 
@@ -23,7 +19,7 @@ def getRequestUrl(url):
 
 # url 작성 후 line 11 함수 호출하고 응답받은 데이터를 json형태로 저장하는 함수
 def getCctv():
-    service_url = "https://api.odcloud.kr/api/15084631/v1/uddi:6835621c-b29c-4972-b0f2-8010d2dae40b?page=1&perPage=2612&serviceKey="
+    service_url = "https://api.odcloud.kr/api/15084631/v1/uddi:6835621c-b29c-4972-b0f2-8010d2dae40b?page=1&perPage=4817&serviceKey="
     url = service_url + ServiceKey
 
     responseDecode = getRequestUrl(url)
@@ -40,60 +36,22 @@ def getInfo():
     jsonResult = []
     num = 0
 
-    for index in range(0, 2612):
-        longitude = jsonData['data'][index]['경도']
+    for index in range(len(jsonData['data'])):
         latitude = jsonData['data'][index]['위도']
+        longitude = jsonData['data'][index]['경도']
         adress = jsonData['data'][index]['소재지지번주소']
         manager_name = jsonData['data'][index]['관리기관명']
         phonenumber = jsonData['data'][index]['관리기관전화번호']
 
-        if '동구' in adress:
-            num += 1
-            jsonResult.append(
-                {'num': num, 'longitude': longitude, 'latitude': latitude, 'adress': adress, 'manager_name': manager_name,
-                 'phonenumber': phonenumber})
+
+
+        if '동구' in adress:  # 동구에 있는 cctv만 추출
+            if latitude and longitude:    # 위경도의 정보가 없는 cctv 제거
+                if float(latitude) > float(longitude):  # 만약 위경도의 정보가 서로 바뀌어 있으면
+                    latitude, longitude = longitude, latitude   # 다시 원상태로
+                jsonResult.append(  # 추출한 정보를 딕셔너리 형태로 저장
+                    {'num': num, 'longitude': longitude, 'latitude': latitude, 'adress': adress, 'manager_name': manager_name,
+                    'phonenumber': phonenumber})
+                num += 1
 
     return jsonResult
-
-def getLng():
-    cctvinfo = getInfo()
-    longitude = []
-    for index in range(0, 336):
-        longitude.append(cctvinfo[index]['longitude'])
-    return longitude
-
-def getLat():
-    cctvinfo = getInfo()
-    latitude = []
-    for index in range(0, 336):
-        latitude.append(cctvinfo[index]['latitude'])
-    return latitude
-
-def getAdress():
-    cctvinfo = getInfo()
-    adress = []
-    for index in range(0, 336):
-        adress.append(cctvinfo[index]['adress'])
-    return adress
-
-def getManager():
-    cctvinfo = getInfo()
-    manager = []
-    for index in range(0, 336):
-        manager.append(cctvinfo[index]['manager_name'])
-    return manager
-
-def getPhonenum():
-    cctvinfo = getInfo()
-    phonenum = []
-    for index in range(0, 336):
-        phonenum.append(cctvinfo[index]['phonenumber'])
-    return phonenum
-
-#
-# def main():
-#     cctv_info = getInfo()
-#     print(cctv_info)
-#
-# if __name__ == '__main__':
-#     main()
