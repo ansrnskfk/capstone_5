@@ -3,7 +3,6 @@
 
 {% load static %}
 <link href = " {% static 'mainStyle.css' %}" rel="stylesheet">
-<link href = " {% static 'searchStyle.css' %}" rel="stylesheet">
 <script type="text/javascript" src="static/app.js'"></script>
 <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=w5d2k9jxta&submodules=geocoder"></script>
 
@@ -90,6 +89,9 @@
             strokeWeight: 6,   //선 두께
             map: map           //오버레이할 지도
     });
+    localStorage.setItem('longitude', 'longitude')
+    localStorage.setItem('latitude', 'latitude')
+
     </script>
 
 <!--    var contentString = [-->
