@@ -52,7 +52,6 @@ def main():
                 pathInfo_json = json.loads((pathInfo.text)) # 응답받은 데이터를 json형식으로 변환
                 for j in range(len(pathInfo_json['features'])): # 경로의 좌표 추출 후 pathCoord에 저장
                     pathCoord.append(pathInfo_json['features'][j]['geometry']['coordinates'])
-                print(pathCoord)
                 waypoints = ''  # 경유지 텍스트 초기화
             else:
                 waypoints = waypoints + str(waypoints_lng[i]) + ',' + str(waypoints_lat[i]) + '_'
@@ -63,7 +62,6 @@ def main():
             pathInfo_json = json.loads((pathInfo.text))
             for j in range(len(pathInfo_json['features'])):
                 pathCoord.append(pathInfo_json['features'][j]['geometry']['coordinates'])
-            print(pathCoord)
 
     return pathCoord
 
