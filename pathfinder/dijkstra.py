@@ -14,8 +14,13 @@ latitude = []; longitude = []
 for list in node_info:
     latitude.append(list['latitude']); longitude.append((list['longitude']))
 
-start_lat = 35.14429517145534; start_lng = 126.93008706784543   # search.html에서 입력받은 출발지의 위경도값
-finish_lat = 35.15134758807111; finish_lng = 126.93696208830134
+# start_lat = 35.14429517145534; start_lng = 126.93008706784543   # search.html에서 입력받은 출발지의 위경도값
+# finish_lat = 35.15134758807111; finish_lng = 126.93696208830134
+start_lat = 35.14615224741997; start_lng = 126.92309512644327
+finish_lat = 35.146462003524306; finish_lng = 126.92847205021735
+# start_lat = 35.18033359239622; start_lng = 126.89034165213242 # 길찾기에 실패하면 경로가 표시되지 않음
+# finish_lat = 35.18192617178464; finish_lng = 126.89740977660219
+
 latitude.append(start_lat); latitude.append(finish_lat)
 longitude.append(start_lng); longitude.append(finish_lng)
 
@@ -95,17 +100,11 @@ def dijkstra(limit):
     distance = routing[finish]['shortestDist']
     return route, distance
 
-        # print("[",toVisit,"]")
-        # print("Dist :", minDist)
-
-    # print("\n", "[", start, "->", finish,"]")
-    # print("Route : ", routing[finish]['route'])
-    # print("ShortestDistance : ", routing[finish]['shortestDist'])
-
 n = 100
 while 1:
     path = dijkstra(n)
-    if path[1] == 0:
+    if path[1] == 0 and n < 500:
         n += 100
     else:
         break
+

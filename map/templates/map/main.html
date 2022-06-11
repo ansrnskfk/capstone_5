@@ -26,7 +26,7 @@
                     <button id = "search" type="submit" form="todo-form" placeholder="SEARCH">검색</button>
             </span>
         </div>
-
+        <button><a href="sms:01074860725 ?body=켑스톤실험문자">긴급 문자 발송</a></button>
         <div id= "menu"> <!--접었다 펴는 메뉴-->
             <li><button class="mbutton" onclick = "location.href ='/map/search'">길찾기</li>
             <li><button class="mbutton" id="safeZonebtn" onclick="safeZone()">안심장소 지도 표시</button></li>
@@ -76,18 +76,18 @@
             */
         }
 
-        var pathCoord = {{pathCoord|safe}};
+        var pathCoord = {{pathCoord|safe}};     // path.py에서 가져온 경로 위경도
         var polylinePath = new Array();
-        for (i=0; i<pathCoord.length; i++){
+        for (i=0; i<pathCoord.length; i++){     // 선 그리기
             LatLng = new naver.maps.LatLng(pathCoord[i][1], pathCoord[i][0])
             polylinePath.push(LatLng)
         }
-        var polyline = new naver.maps.Polyline({
+        var polyline = new naver.maps.Polyline({    // 선 설정
             path: polylinePath,      //선 위치 변수배열
-            strokeColor: '#FF0000', //선 색 빨강 #빨강,초록,파랑
-            strokeOpacity: 0.8, //선 투명도 0 ~ 1
-            strokeWeight: 6,   //선 두께
-            map: map           //오버레이할 지도
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.8,
+            strokeWeight: 6,
+            map: map
     });
     localStorage.setItem('longitude', 'longitude')
     localStorage.setItem('latitude', 'latitude')
@@ -117,7 +117,7 @@
 
 <!--    infowindow.open(map, marker);-->
 <!--    </script>-->
-    
+
 </body>
 
 </html>

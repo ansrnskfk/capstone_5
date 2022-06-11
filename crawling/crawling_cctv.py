@@ -53,5 +53,8 @@ def getInfo():
                     {'num': num, 'longitude': longitude, 'latitude': latitude, 'adress': adress, 'manager_name': manager_name,
                     'phonenumber': phonenumber})
                 num += 1
-
+    # for i in jsonResult:
+    #     print(i)
     return jsonResult
+
+getInfo()

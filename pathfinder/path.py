@@ -22,7 +22,32 @@ def getPath(startX, startY, endX, endY, passList):
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "appKey": "l7xxfdc75c1509a74ecdba02bf5e024ee9d5"
+        "appKey": "l7xx41798145ad9c47a89a1eea6f03c1b4b5"
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+    return response
+
+def getPath_NoPassList(startX, startY, endX, endY):
+    url = "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1"
+    payload = {
+        "angle": 0,
+        "speed": 0,
+        "reqCoordType": "WGS84GEO",
+        "searchOption": "0",
+        "resCoordType": "WGS84GEO",
+        "sort": "index",
+        "startX": startX,
+        "startY": startY,
+        "endX": endX,
+        "endY": endY,
+        "startName": "start",
+        "endName": "goal"
+    }
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "appKey": "l7xx41798145ad9c47a89a1eea6f03c1b4b5"
     }
 
     response = requests.post(url, json=payload, headers=headers)
@@ -50,6 +75,7 @@ def main():
                 passList = waypoints[:-1]
                 pathInfo = getPath(startX, startY, endX, endY, passList)    # 출발지, 목적지, 5개 이하의 경유지를 getpath의 파라미터로 제공
                 pathInfo_json = json.loads((pathInfo.text)) # 응답받은 데이터를 json형식으로 변환
+                # print(pathInfo_json)
                 for j in range(len(pathInfo_json['features'])): # 경로의 좌표 추출 후 pathCoord에 저장
                     pathCoord.append(pathInfo_json['features'][j]['geometry']['coordinates'])
                 waypoints = ''  # 경유지 텍스트 초기화
@@ -58,16 +84,16 @@ def main():
         else:
             endX = waypoints_lng[i]; endY = waypoints_lat[i]
             passList = waypoints[:-1]
-            pathInfo = getPath(startX, startY, endX, endY, passList)
+            if passList:
+                pathInfo = getPath(startX, startY, endX, endY, passList)
+            else:
+                pathInfo = getPath_NoPassList(startX, startY, endX, endY)
             pathInfo_json = json.loads((pathInfo.text))
             for j in range(len(pathInfo_json['features'])):
                 pathCoord.append(pathInfo_json['features'][j]['geometry']['coordinates'])
-
+    # for i in pathCoord:
+    #     print(i)
     return pathCoord
 
-# asdf = getPath(startX, startY, endX, endY, passList)
-# print(asdf.text)
-# [0]['geomatry']['coordinates']
-#
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    main()
