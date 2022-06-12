@@ -1,0 +1,9 @@
+{% if cctvinfo %}
+    <ul>
+        {% for cctv in cctvinfo %}
+            <li><a href="/map/">{{asdf}}</a></li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>질문이 없습니다.</p>
+{% endif %}

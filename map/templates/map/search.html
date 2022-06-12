@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+{% load static %}
+<link href = " {% static 'searchStyle.css' %}" rel="stylesheet">
+<script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=w5d2k9jxta&submodules=geocoder"></script>
+<script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=q6jrpz6n66"></script>
+    <head>
+        <title>길찾기</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=l7xx7f1d03be935248809fe355b8bfd3b742"></script>
+        <div id="map" style="width:100%;height:950px;"></div>
+        <script type="text/javascript">
+<!--        if(localStorage.getItem('latitude')){-->
+<!--            var lastData = localStorage.getItem('latitude')-->
+<!--        }-->
+<!--        if(localStorage.getItem('longitude')){-->
+<!--            var lastData = localStorage.getItem('longitude')-->
+<!--        }-->
+
+        var map, marker;
+        var adress = {{adress|safe}};
+        var markerArr = [];
+        function initTmap(){
+            var map = new naver.maps.Map("map", {   // 지도 설정
+                center: new naver.maps.LatLng(35.14429517145534, 126.93008706784543),
+                zoom: 15,
+                mapTypeControl: true,
+                zoomControl: true,
+                zoomControlOptions: { position: naver.maps.Position.LEFT_CENTER },
+            });
+
+            $("#btn_select").click(function(){
+
+		        var searchKeyword = $('#searchKeyword').val();
+		        $.ajax({
+			        method:"GET",
+			        url:"https://apis.openapi.sk.com/tmap/pois?version=1&format=json&callback=result",
+			        async:false,
+			        data:{
+				        "appKey" : "l7xx7f1d03be935248809fe355b8bfd3b742",
+				        "searchKeyword" : searchKeyword,
+				        "resCoordType" : "EPSG3857",
+				        "reqCoordType" : "WGS84GEO",
+				        "count" : 10
+			        },
+			        success:function(response){
+			            var resultpoisData = response.searchPoiInfo.pois.poi;
+			            var innerHtml ="";	// Search Reulsts 결과값 노출 위한 변수
+                        var positionBounds = new Tmapv2.LatLngBounds();		//맵에 결과물 확인 하기 위한 LatLngBounds객체 생성
+
+                        for(var k in resultpoisData){
+
+                            var noorLat = Number(resultpoisData[k].noorLat);
+                            var noorLon = Number(resultpoisData[k].noorLon);
+                            var name = resultpoisData[k].name;
+
+                            var pointCng = new Tmapv2.Point(noorLon, noorLat);
+                            var projectionCng = new Tmapv2.Projection.convertEPSG3857ToWGS84GEO(pointCng);
+
+                            var lat = projectionCng._lat;   // 위도
+                            var lon = projectionCng._lng;   // 경도
+
+                            // var markerPosition = new Tmapv2.LatLng(lat, lon);
+
+                            var marker = new naver.maps.Marker({
+                                position: new naver.maps.LatLng(lat, lon),
+                                map: map
+                            });
+                            var contentString = [
+                                    '<div class="iw_inner">',
+                                    '   document.getElementById("hi").value = test;',
+                                    '   <p>서울특별시 중구 태평로1가 31 | 서울특별시 중구 세종대로 110 서울특별시청<br />',
+                                    '       02-120 | 공공,사회기관 &gt; 특별,광역시청<br />',
+                                    '   </p>',
+                                    '</div>'
+                                ].join('');
+
+                            var infowindow = new naver.maps.InfoWindow({
+                                content: contentString
+                            });
+
+                            innerHtml += "<li><style='vertical-align:middle;'/><span>"+name+"</span></li>";
+
+                            //markerArr.push(marker);
+                            //positionBounds.extend(markerPosition);	// LatLngBounds의 객체 확장
+                        }
+
+                        $("#searchResult").html(innerHtml);	//searchResult 결과값 노출
+                        $("#searchResult").on("click", function(){
+                            infowindow.open(map, marker);
+                        });
+
+                    },
+                    error:function(request,status,error){
+                        console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                    }
+			    });
+            });
+        }
+
+        </script>
+    </head>
+
+    <body onload="initTmap();">
+        <div class = "searchBar"> <!--길찾기 바-->
+
+            <button id="change">^</button>
+
+            <div>
+                <div class="SBox"> <!--sbox들은 디자인상 이유로 구분되었습니다-->
+                    <input id="searchKeyword" type = "text"> <!--검색 창입니다-->
+                    <button id = "delete">X</button>
+                </div>
+                <button id = "btn_select">검색</button>
+            </div>
+            <br>
+            <div>
+                <div class="SBox">
+                    <input id="searchKeyword" type = "text"> <!--검색 창입니다-->
+                    <button id = "delete">X</button>
+                </div>
+                <button id = "btn_select">검색</button>
+            </div>
+            <br>
+            <div style="width: 30%; float:left;">
+                <div class="title"><strong>Search</strong> Results</div>
+                <div class="rst_wrap">
+                    <div class="rst mCustomScrollbar">
+                        <ul id="searchResult" name="searchResult">
+                            <li>검색결과</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="pastList"> <!--과거 기록-->
+
+        </div>
+    </body>
+</html>
