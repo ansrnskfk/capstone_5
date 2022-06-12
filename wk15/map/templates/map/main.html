@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+{% load static %}
+<link href = " {% static 'mainStyle.css' %}" rel="stylesheet">
+<script type="text/javascript" src="static/app.js'"></script>
+<script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=w5d2k9jxta&submodules=geocoder"></script>
+
+<head>
+  <title>AI Navi</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=q6jrpz6n66"></script>
+</head>
+<body>
+  <div class ="front">
+    <div class = "display"> <!--상단부-->
+        <div class = "menuSec"> <!--메뉴 바-->
+            <button id="main" onclick="category0()"><img src="{% static 'img/main.png'%}" height="40" width ="40"></button>
+            <span id="searchB">
+                <div class="SBox1">
+                        <input id="sBox" type = "targetLocation"> <!--검색 창입니다-->
+                        <button id = "delete">X</button>
+                    </div>
+                    <button id = "search" type="submit" form="todo-form" placeholder="SEARCH">검색</button>
+            </span>
+        </div>
+        <button><a href="sms:01074860725 ?body=켑스톤실험문자">긴급 문자 발송</a></button>
+        <div id= "menu"> <!--접었다 펴는 메뉴-->
+            <li><button class="mbutton" onclick = "location.href ='/map/search'">길찾기</li>
+            <li><button class="mbutton" id="safeZonebtn" onclick="safeZone()">안심장소 지도 표시</button></li>
+            <li><button class="mbutton">가장 가까운 안심장소</button></li>
+            <li><button class="mbutton">가까운 성범죄자 위치</button></li>
+            <li><button class="mbutton" onclick ="location.href = '/map/setting'">설정</button></li>
+        </div>
+    </div>
+  </div>
+
+    <!--네이버 지도-->
+    <div id="map" style="width:100%;height:950px;"></div>
+
+    <script type="text/javascript">
+        function category0() {
+            if(document.getElementById('menu').style.display ==='none') {
+                document.getElementById('menu').style.display = 'block';
+            } else {
+                document.getElementById('menu').style.display = 'none';
+            }
+        }
+
+
+        var latitude = {{latitude|safe}};
+        var longitude = {{longitude|safe}};
+
+        var map = new naver.maps.Map("map", {   // 지도 설정
+            center: new naver.maps.LatLng(latitude[1], longitude[1]),
+            zoom: 15,
+            mapTypeControl: true,
+            zoomControl: true,
+            zoomControlOptions: { position: naver.maps.Position.LEFT_CENTER },
+        });
+
+        function safeZone(){
+            if(document.getElementById('safeZonebtn')){
+                for(i=0; i<latitude.length; i++){   // 마커 생성
+                    var marker = new naver.maps.Marker({
+                    position: new naver.maps.LatLng(latitude[i], longitude[i]),
+                    map: map
+                    });
+                }
+            }
+            /*
+            else if{
+            }
+            */
+        }
+
+        var pathCoord = {{pathCoord|safe}};     // path.py에서 가져온 경로 위경도
+        var polylinePath = new Array();
+        for (i=0; i<pathCoord.length; i++){     // 선 그리기
+            LatLng = new naver.maps.LatLng(pathCoord[i][1], pathCoord[i][0])
+            polylinePath.push(LatLng)
+        }
+        var polyline = new naver.maps.Polyline({    // 선 설정
+            path: polylinePath,      //선 위치 변수배열
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.8,
+            strokeWeight: 6,
+            map: map
+    });
+    localStorage.setItem('longitude', 'longitude')
+    localStorage.setItem('latitude', 'latitude')
+
+    </script>
+
+<!--    var contentString = [-->
+<!--        '<div class="iw_inner">',-->
+<!--        '   <h3>CCTV</h3>',-->
+<!--        '   <p>test<br />',-->
+<!--        '       test<br />',-->
+<!--        '   </p>',-->
+<!--        '</div>'-->
+<!--    ].join('');-->
+
+<!--    var infowindow = new naver.maps.InfoWindow({-->
+<!--     content: contentString-->
+<!--    });-->
+
+<!--    naver.maps.Event.addListener(marker, "click", function(e) {-->
+<!--        if (infowindow.getMap()) {-->
+<!--            infowindow.close();-->
+<!--     } else {-->
+<!--         infowindow.open(map, marker);-->
+<!--     }-->
+<!--    });-->
+
+<!--    infowindow.open(map, marker);-->
+<!--    </script>-->
+
+</body>
+
+</html>
